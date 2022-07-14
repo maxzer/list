@@ -3,15 +3,17 @@
     <select id="country"
             @change="changeCountry($event)"
     >
-      <option value="0">Все страны</option>
+      <option selected value="0">Все страны</option>
       <option value="1">Россия</option>
       <option value="2">Англия</option>
       <option value="3">Америка</option>
     </select>
     <!--Регионы-->
     <select id="region"
+            ref="region"
             @change="changeRegion($event)"
     >
+      <option selected value="0">Не выбрано</option>
       <option v-for="(region, i) in selectedRegion"
               :key="i"
               :value="region.regionId"
@@ -20,7 +22,10 @@
       </option>
     </select>
     <!--Города-->
-    <select id="city">
+    <select id="city"
+            ref="city"
+    >
+      <option selected value="0">Не выбрано</option>
       <option v-for="(city, i) in selectedCity"
               :key="i"
               :value="city.regionId">
@@ -75,7 +80,6 @@
                         'regionId': 6,
                     },
                 ],
-
                 cities: [
                     {
                         'title': 'Видное',
@@ -107,14 +111,25 @@
             }
         },
 
+        created() {
+            this.allSelectedRegion();
+        },
+
         methods: {
             changeCountry(val) {
-                this.selectedRegion = this.regions.filter(item => item.countryId === +val.target.value);
-                this.selectedCity = this.cities.filter(item => item.regionId === this.selectedRegion[0]?.regionId);
+                this.selectedCity = [];
+                this.$refs.region.selectedIndex = 0;
+                if (!+val.target.value) this.allSelectedRegion();
+                else this.selectedRegion = this.regions.filter(item => item.countryId === +val.target.value);
             },
 
             changeRegion(val) {
+                this.$refs.city.selectedIndex = 0;
                 this.selectedCity = this.cities.filter(item => item.regionId === +val.target.value);
+            },
+
+            allSelectedRegion() {
+                this.selectedRegion = this.regions
             }
         }
     }
